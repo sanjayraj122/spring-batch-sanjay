@@ -21,7 +21,7 @@ import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -36,7 +36,8 @@ public class SpringBatchConfig {
     public FlatFileItemReader<User> reader() {
         return new FlatFileItemReaderBuilder<User>()
                 .name("userReader")
-                .resource(new FileSystemResource("people-1000.csv"))
+                .resource(new ClassPathResource("people-1000.csv"))
+
                 .linesToSkip(1)
                 .lineMapper(lineMapper())
                 .targetType(User.class)
@@ -48,7 +49,8 @@ public class SpringBatchConfig {
         DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
         lineTokenizer.setDelimiter(",");
         lineTokenizer.setStrict(false);
-        lineTokenizer.setNames("id", "userId", "firstName", "lastName", "gender", "email", "phone", "dateOfBirth", "jobTitle");
+        // Remove "id" from the names so it is not set from CSV
+        lineTokenizer.setNames("userId", "firstName", "lastName", "gender", "email", "phone", "dateOfBirth", "jobTitle");
 
 
         BeanWrapperFieldSetMapper<User> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
